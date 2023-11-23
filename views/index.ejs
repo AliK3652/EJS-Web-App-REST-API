@@ -1,0 +1,53 @@
+<!-- views/index.ejs -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FDA Recall Information</title>
+    <link rel="stylesheet" href="\style.css">
+</head>
+<body>
+    <div>
+        <h1>FDA Recall Information</h1>
+        <label for="recallNumber">Enter a number between 1 and 5:</label>
+        <input type="number" id="recallNumber" name="recallNumber" min="1" max="5">
+        <button onclick="retrieveData()">Retrieve Data</button>
+    </div>
+
+    <div id="results">
+        <!-- Display recall information here -->
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        function retrieveData() {
+            const recallNumber = document.getElementById('recallNumber').value;
+
+            axios.get(`/api/recalls/${recallNumber}`)
+                .then(response => {
+                    displayResults(response.data);
+                })
+                .catch(error => {
+                    console.error('Error retrieving data:', error);
+                });
+        }
+
+        function displayResults(data) {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '';
+
+            data.results.forEach(recall => {
+                const recallDiv = document.createElement('div');
+                recallDiv.innerHTML = `
+                    <p><strong>Product:</strong> ${recall.product_description}</p>
+                    <p><strong>Reason:</strong> ${recall.reason_for_recall}</p>
+                    <hr>
+                `;
+                resultsDiv.appendChild(recallDiv);
+            });
+        }
+    </script>
+</body>
+</html>
